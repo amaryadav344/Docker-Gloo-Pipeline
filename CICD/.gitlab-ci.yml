@@ -3,16 +3,16 @@ stages:
   - deploy
 
 variables:
-  KUBECONFIG: "/path/to/kubeconfig" # Adjust this path to your kubeconfig file
+  KUBECONFIG: "/path/to/kubeconfig" 
 
-# Global job settings (optional)
+
 default:
-  image: bitnami/kubectl:latest # Using a Docker image with kubectl installed
+  image: bitnami/kubectl:latest 
   before_script:
     - echo "Setting up kubeconfig"
     - export KUBECONFIG=$KUBECONFIG
 
-# Build Docker image for services (optional)
+
 build:
   stage: build
   script:
@@ -24,7 +24,7 @@ build:
     changes:
       - "services/**"
 
-# Deploy to ephemeral environment
+
 deploy_ephemeral:
   stage: deploy
   environment:
@@ -40,7 +40,7 @@ deploy_ephemeral:
       - "services/mongodb/ephemeral/**"
       - "services/api/ephemeral/**"
 
-# Deploy to development environment
+
 deploy_dev:
   stage: deploy
   environment:
@@ -56,7 +56,7 @@ deploy_dev:
       - "services/mongodb/dev/**"
       - "services/api/dev/**"
 
-# Deploy to test environment
+
 deploy_test:
   stage: deploy
   environment:
@@ -72,7 +72,7 @@ deploy_test:
       - "services/mongodb/test/**"
       - "services/api/test/**"
 
-# Deploy to preprod environment
+
 deploy_preprod:
   stage: deploy
   environment:
@@ -88,7 +88,7 @@ deploy_preprod:
       - "services/mongodb/preprod/**"
       - "services/api/preprod/**"
 
-# Deploy to production environment
+
 deploy_prod:
   stage: deploy
   environment:
