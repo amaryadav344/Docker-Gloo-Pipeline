@@ -1,0 +1,18 @@
+apiVersion: networking.gloo.solo.io/v1
+kind: TrafficPolicy
+metadata:
+  name: api-microservice-dev-policy
+  namespace: gloo-system
+spec:
+  destinationSelector:
+  - kubeService:
+      labels:
+        app: api-microservice
+        environment: dev
+  trafficShift:
+    destinations:
+    - destination:
+        kubeService:
+          name: api-microservice
+          namespace: dev
+      weight: 100

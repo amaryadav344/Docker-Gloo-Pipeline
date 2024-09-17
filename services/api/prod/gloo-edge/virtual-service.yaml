@@ -1,0 +1,17 @@
+apiVersion: gateway.solo.io/v1
+kind: VirtualService
+metadata:
+  name: api-microservice-vs
+  namespace: gloo-system
+spec:
+  virtualHost:
+    domains:
+    - api.example.com
+    routes:
+    - matchers:
+      - prefix: /
+      routeAction:
+        single:
+          upstream:
+            name: api-microservice
+            namespace: prod

@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb
+  namespace: prod
+  labels:
+    app: mongodb
+    environment: prod
+spec:
+  type: LoadBalancer
+  selector:
+    app: mongodb
+    environment: prod
+  ports:
+    - protocol: TCP
+      port: 27017
+      targetPort: 27017

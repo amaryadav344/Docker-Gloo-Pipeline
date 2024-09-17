@@ -1,0 +1,105 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  KUBECONFIG: "/path/to/kubeconfig" # Adjust this path to your kubeconfig file
+
+# Global job settings (optional)
+default:
+  image: bitnami/kubectl:latest # Using a Docker image with kubectl installed
+  before_script:
+    - echo "Setting up kubeconfig"
+    - export KUBECONFIG=$KUBECONFIG
+
+# Build Docker image for services (optional)
+build:
+  stage: build
+  script:
+    - docker build -t myregistry/mongodb:latest ./services/mongodb/
+    - docker build -t myregistry/api-microservice:latest ./services/api/
+    - docker push myregistry/mongodb:latest
+    - docker push myregistry/api-microservice:latest
+  only:
+    changes:
+      - "services/**"
+
+# Deploy to ephemeral environment
+deploy_ephemeral:
+  stage: deploy
+  environment:
+    name: ephemeral
+    url: https://ephemeral.example.com
+  script:
+    - kubectl apply -f services/mongodb/ephemeral/service.yaml
+    - kubectl apply -f services/api/ephemeral/service.yaml
+    - kubectl apply -f services/api/ephemeral/gloo-edge/virtual-service.yaml
+    - kubectl apply -f services/api/ephemeral/gloo-mesh/mesh-config.yaml
+  only:
+    changes:
+      - "services/mongodb/ephemeral/**"
+      - "services/api/ephemeral/**"
+
+# Deploy to development environment
+deploy_dev:
+  stage: deploy
+  environment:
+    name: dev
+    url: https://dev.example.com
+  script:
+    - kubectl apply -f services/mongodb/dev/service.yaml
+    - kubectl apply -f services/api/dev/service.yaml
+    - kubectl apply -f services/api/dev/gloo-edge/virtual-service.yaml
+    - kubectl apply -f services/api/dev/gloo-mesh/mesh-config.yaml
+  only:
+    changes:
+      - "services/mongodb/dev/**"
+      - "services/api/dev/**"
+
+# Deploy to test environment
+deploy_test:
+  stage: deploy
+  environment:
+    name: test
+    url: https://test.example.com
+  script:
+    - kubectl apply -f services/mongodb/test/service.yaml
+    - kubectl apply -f services/api/test/service.yaml
+    - kubectl apply -f services/api/test/gloo-edge/virtual-service.yaml
+    - kubectl apply -f services/api/test/gloo-mesh/mesh-config.yaml
+  only:
+    changes:
+      - "services/mongodb/test/**"
+      - "services/api/test/**"
+
+# Deploy to preprod environment
+deploy_preprod:
+  stage: deploy
+  environment:
+    name: preprod
+    url: https://preprod.example.com
+  script:
+    - kubectl apply -f services/mongodb/preprod/service.yaml
+    - kubectl apply -f services/api/preprod/service.yaml
+    - kubectl apply -f services/api/preprod/gloo-edge/virtual-service.yaml
+    - kubectl apply -f services/api/preprod/gloo-mesh/mesh-config.yaml
+  only:
+    changes:
+      - "services/mongodb/preprod/**"
+      - "services/api/preprod/**"
+
+# Deploy to production environment
+deploy_prod:
+  stage: deploy
+  environment:
+    name: prod
+    url: https://example.com
+  script:
+    - kubectl apply -f services/mongodb/prod/service.yaml
+    - kubectl apply -f services/api/prod/service.yaml
+    - kubectl apply -f services/api/prod/gloo-edge/virtual-service.yaml
+    - kubectl apply -f services/api/prod/gloo-mesh/mesh-config.yaml
+  only:
+    changes:
+      - "services/mongodb/prod/**"
+      - "services/api/prod/**"
